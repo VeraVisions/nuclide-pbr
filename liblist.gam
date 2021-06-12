@@ -1,0 +1,24 @@
+game "PBR Showcase"
+gamedir "base_pbr"
+fallback_dir ""
+base_dir "base"
+url_info "www.vera-visions.com"
+url_dl
+version "GIT"
+size 10519918
+svonly 0
+cldll 1
+type "Singleplayer"
+minversion 0
+nomodels 1
+nosprays 0
+mpentity "info_player_deathmatch"
+gamedll "progs.dat"
+startmap "test_pbr"
+trainingmap "map test_pbr"
+pkgname ""
+pkgfile ""
+chatroom "lobby"
+readme "readme.txt"
+introvideo ""
+steambg 0
