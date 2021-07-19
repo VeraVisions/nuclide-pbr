@@ -15,7 +15,7 @@ nosprays 0
 mpentity "info_player_deathmatch"
 gamedll "progs.dat"
 startmap "test_pbr"
-trainingmap "map test_pbr"
+trainingmap "test_pbr"
 pkgname ""
 pkgfile ""
 chatroom "lobby"
