@@ -5,6 +5,6 @@
 	specularmap textures/pbrtest/metal012_mra.tga
 	
 	{
-		program pbr_lightmapped
+		program defaultwall
 	}
 }

@@ -5,6 +5,6 @@
 	specularmap textures/pbrtest/woodfloor041_mra.tga
 	
 	{
-		program pbr_lightmapped
+		program defaultwall
 	}
 }

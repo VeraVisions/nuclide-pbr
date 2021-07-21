@@ -5,6 +5,6 @@
 	specularmap textures/pbrtest/woodsiding001_mra.tga
 	
 	{
-		program pbr_lightmapped
+		program defaultwall
 	}
 }
