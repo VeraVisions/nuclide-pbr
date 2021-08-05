@@ -1,12 +1,11 @@
 Nuclide SDK PBR Example
 
+![Preview](img/preview.png)
+
 Some users have requested this to be integrated into the
 SDK as-is, however it's quite big!
 
 So we created a separate repository for it.
-
-This will get updated to include shaders for rtlight
-and entity models soon.
 
 To get started, either start a new game or enter
 'map test_pbr' in console.

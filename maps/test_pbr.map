@@ -331,3 +331,12 @@ pbrtest/metal022
 "classname" "env_cubemap"
 "origin" "0.000000 576.000000 0.000000"
 }
+// entity 8
+{
+"classname" "prop_dynamic"
+"origin" "64.000000 -64.000000 0.000000"
+"model" "models/logo.iqm"
+"angles" "0 -125 0"
+"modelscale" "0.45"
+"shadows" "1"
+}
