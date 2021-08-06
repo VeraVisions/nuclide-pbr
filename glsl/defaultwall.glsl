@@ -43,6 +43,7 @@ varying vec2 tex_c;
 #ifdef SPECULAR
 varying vec3 eyevector;
 varying mat3 invsurface;
+#define PBR
 #endif
 
 varying vec2 lm0;
@@ -69,7 +70,7 @@ varying vec2 lm1, lm2, lm3;
 	{
 		lightmapped_init();
 
-#ifdef SPECULAR
+	#ifdef PBR
 		invsurface[0] = v_svector;
 		invsurface[1] = v_tvector;
 		invsurface[2] = v_normal;
@@ -77,7 +78,7 @@ varying vec2 lm1, lm2, lm3;
 		eyevector.x = dot(eyeminusvertex, v_svector.xyz);
 		eyevector.y = dot(eyeminusvertex, v_tvector.xyz);
 		eyevector.z = dot(eyeminusvertex, v_normal.xyz);
-#endif
+	#endif
 
 		tex_c = v_texcoord;
 		gl_Position = ftetransform();
@@ -152,23 +153,23 @@ varying vec2 lm1, lm2, lm3;
 	{
 		vec3 lightmaps;
 
-#ifdef LIGHTSTYLED
+	#ifdef LIGHTSTYLED
 		lightmaps  = LIGHTMAP0 * e_lmscale[0].rgb;
 		lightmaps += LIGHTMAP1 * e_lmscale[1].rgb;
 		lightmaps += LIGHTMAP2 * e_lmscale[2].rgb;
 		lightmaps += LIGHTMAP3 * e_lmscale[3].rgb;
-#else
+	#else
 		lightmaps  = LIGHTMAP * e_lmscale.rgb;
-#endif
+	#endif
 		return lightmaps;
 	}
 
 #if r_skipNormal==0
 	vec3 lightmap_fragment(vec3 normal_f)
 	{
-#ifndef DELUXE
+	#ifndef DELUXE
 		return lightmap_fragment();
-#else
+	#else
 		vec3 lightmaps;
 
 	#ifdef LIGHTSTYLED
@@ -181,17 +182,17 @@ varying vec2 lm1, lm2, lm3;
 	#endif
 
 		return lightmaps;
-#endif
+	#endif
 	}
 #endif
 
 	void main (void)
 	{
-#ifdef OFFSETMAPPING
+	#ifdef OFFSETMAPPING
 		vec2 tcoffsetmap = offsetmap(s_normalmap, tex_c, eyevector);
-#else
+	#else
 		#define tcoffsetmap tex_c
-#endif
+	#endif
 
 		/* samplers */
 		vec4 albedo_f = texture2D(s_diffuse, tcoffsetmap); // diffuse RGBA
@@ -200,7 +201,7 @@ varying vec2 lm1, lm2, lm3;
 		/* deluxe/light */
 		vec3 deluxe = normalize((texture2D(s_deluxemap, lm0).rgb - 0.5));
 
-#ifdef SPECULAR
+	#ifdef PBR
 		float metalness_f =texture2D(s_specular, tcoffsetmap).r; // specularmap R
 		float roughness_f = texture2D(s_specular, tcoffsetmap).g; // specularmap G
 		float ao = texture2D(s_specular, tcoffsetmap).b; // specularmap B
@@ -218,28 +219,28 @@ varying vec2 lm1, lm2, lm3;
 
 		/* do PBR specular using our handy function */
 		gl_FragColor += (LightingFuncGGX(normal_f, normalize(eyevector), deluxe, roughness_f, FRESNEL) * gl_FragColor);
-#else
+	#else
 		gl_FragColor = albedo_f;
-#endif
+	#endif
 
 		/* calculate lightmap fragment on top */
 		gl_FragColor.rgb *= lightmap_fragment(normal_f);
 
 		/* r_shadows 2 */
-#ifdef FAKESHADOWS
+	#ifdef FAKESHADOWS
 		gl_FragColor.rgb *= ShadowmapFilter(s_shadowmap, vtexprojcoord);
-#endif
+	#endif
 
 		/* emissive texture/fullbright bits */
-#ifdef FULLBRIGHT
+	#ifdef FULLBRIGHT
 		vec3 emission_f = texture2D(s_fullbright, tcoffsetmap).rgb; // fullbrightmap RGB
 		gl_FragColor.rgb += emission_f;
-#endif
+	#endif
 
 		/* ambient occlusion */
-#ifdef SPECULAR
+	#ifdef PBR
 		gl_FragColor.rgb *= ao;
-#endif
+	#endif
 
 		/* and let the engine add fog on top */
 		gl_FragColor = fog4(gl_FragColor);

@@ -7,34 +7,37 @@
 //==============================================================================
 
 !!ver 100 150
+
 !!permu BUMP
 !!permu FRAMEBLEND
 !!permu SKELETAL
 !!permu UPPERLOWER
 !!permu FOG
 !!permu REFLECTCUBEMASK
+
 !!cvarf r_glsl_offsetmapping_scale
 !!cvardf r_glsl_pcf
 !!cvardf r_glsl_fresnel
-!!samps shadowmap diffuse normalmap specular upper lower reflectcube reflectmask projectionmap
+
+!!samps diffuse shadowmap projectionmap
+!!samps =BUMP normalmap
+!!samps =UPPERLOWER upper lower
+!!samps =SPECULAR specular reflectcube
+!!samps =FAKESHADOWS shadowmap
 
 #include "sys/defs.h"
-
-#ifdef UPPERLOWER
-#define UPPER
-#define LOWER
-#endif
 
 varying vec2 tcbase;
 varying vec3 lightvector;
 
-#if defined(VERTEXCOLOURS)
+#ifdef VERTEXCOLOURS
 varying vec4 vc;
 #endif
 
 #ifdef SPECULAR
 varying vec3 eyevector;
 varying mat3 invsurface;
+#define PBR
 #endif
 
 #if defined(PCF) || defined(CUBE) || defined(SPOT)
@@ -60,7 +63,7 @@ varying vec4 vtexprojcoord;
 		lightvector.z = dot(lightminusvertex, n.xyz);
 	#endif
 
-	#if defined(VERTEXCOLOURS)
+	#ifdef VERTEXCOLOURS
 		vc = v_colour;
 	#endif
 
@@ -135,14 +138,8 @@ varying vec4 vtexprojcoord;
 		#define tcbase tcoffsetmap
 	#endif
 
-		vec4 albedo_f = texture2D(s_diffuse, tcbase); // diffuse RGBA
-		vec3 normal_f = normalize(texture2D(s_normalmap, tcbase).rgb - 0.5); // normalmap RGB
-
-	#ifdef SPECULAR
-		float metalness_f =texture2D(s_specular, tcbase).r; // specularmap R
-		float roughness_f = texture2D(s_specular, tcbase).g; // specularmap G
-		float ao = texture2D(s_specular, tcbase).b; // specularmap B
-	#endif
+		vec4 albedo_f = texture2D(s_diffuse, tcbase);
+		vec3 normal_f = normalize(texture2D(s_normalmap, tcbase).rgb - 0.5);
 
 	#ifdef ORTHO
 		float colorscale = 1.0;
@@ -151,12 +148,12 @@ varying vec4 vtexprojcoord;
 	#endif
 
 	#ifdef PCF
-		/*filter the light by the shadowmap. logically a boolean, but we allow fractions for softer shadows*/
+		/* filter the light by the shadowmap. logically a boolean, but we allow fractions for softer shadows */
 		colorscale *= ShadowmapFilter(s_shadowmap, vtexprojcoord);
 	#endif
 
-	#if defined(SPOT)
-		/*filter the colour by the spotlight. discard anything behind the light so we don't get a mirror image*/
+	#ifdef SPOT
+		/* filter the colour by the spotlight. discard anything behind the light so we don't get a mirror image */
 		if (vtexprojcoord.w < 0.0) discard;
 		vec2 spot = ((vtexprojcoord.st)/vtexprojcoord.w);
 		colorscale*=1.0-(dot(spot,spot));
@@ -166,7 +163,7 @@ varying vec4 vtexprojcoord;
 		{
 			vec3 out_f;
 
-		#if defined(FLAT)
+		#ifdef FLAT
 			albedo_f = vec4(FLAT, FLAT, FLAT, 1.0);
 		#else
 			#ifdef VERTEXCOLOURS
@@ -184,8 +181,11 @@ varying vec4 vtexprojcoord;
 			albedo_f.rgb += lc.rgb*e_lowercolour*lc.a;
 		#endif
 
+		#ifdef PBR
+			float metalness_f =texture2D(s_specular, tcbase).r;
+			float roughness_f = texture2D(s_specular, tcbase).g;
+			float ao = texture2D(s_specular, tcbase).b;
 
-		#ifdef SPECULAR
 			vec3 nl = normalize(lightvector);
 			out_f = albedo_f.rgb * (l_lightcolourscale.x + l_lightcolourscale.y * max(dot(normal_f.rgb, nl), 0.0));
 
@@ -199,21 +199,21 @@ varying vec4 vtexprojcoord;
 			vec3 cube_c = reflect(-eyevector, normal_f.rgb);
 			cube_c = cube_c.x*invsurface[0] + cube_c.y*invsurface[1] + cube_c.z*invsurface[2];
 			cube_c = vec4(m_model * vec4(cube_c.xyz,0.0)).xyz;
-		
+
 			out_f.rgb = out_f.rgb + (vec3(metalness_f,metalness_f,metalness_f) * textureCube(s_reflectcube, cube_c).rgb);
 		#endif
 
 		#ifdef CUBE
-			/*filter the colour by the cubemap projection*/
+			/* filter the colour by the cubemap projection */
 			out_f *= textureCube(s_projectionmap, vtexprojcoord.xyz).rgb;
 		#endif
 
-		#if defined(PROJECTION)
-			/*2d projection, not used*/
+		#ifdef PROJECTION
+			/* 2d projection, not used */
 			out_f *= texture2d(s_projectionmap, shadowcoord);
 		#endif
 
-		#if defined(VERTEXCOLOURS)
+		#ifdef VERTEXCOLOURS
 			out_f *= vc.rgb * vc.a;
 		#endif
 
