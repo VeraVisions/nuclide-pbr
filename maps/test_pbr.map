@@ -334,9 +334,10 @@ pbrtest/metal022
 // entity 8
 {
 "classname" "prop_dynamic"
-"origin" "64.000000 -64.000000 0.000000"
+"origin" "64.000000 -64.000000 -32.000000"
 "model" "models/logo.iqm"
-"angles" "0 -125 0"
+"angles" "0 135 -45"
 "modelscale" "0.45"
 "shadows" "1"
+"_cs" "1"
 }

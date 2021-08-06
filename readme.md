@@ -2,9 +2,11 @@
 
 ![Preview](img/preview.png)
 
-Some users have requested this to be integrated into the
-SDK as-is, however it's quite big!
-So we created a separate repository for it.
+This repository contains 3 GLSL files meant for use in FTEQW, which will enable [Physically Based Rendering]([https://en.wikipedia.org/wiki/Physically_based_rendering]).
+Included are some test assets (from ambientcg.com) that are incorporated into a test-map.
+The test-map is a modified idTech 3 BSP with cubemap surface info.
+
+Both lightmapped and fully-realtime lighting paths are supported.
 
 To get started, either start a new game or enter
 `map test_pbr` in console.
@@ -15,10 +17,14 @@ issue 'vid_reload' in console.
 
 All the assets in here are licensed CC0/Public Domain.
 
-Installation:
-Clone into the Nuclide SDK like so:
+# Installation
+Clone into a set-up Nuclide SDK like so:
 
 `git clone https://www.github.com/VeraVisions/nuclide-pbr base_pbr`
+
+Run:
+
+`./nuclide -game base_pbr +map test_pbr`
 
 # Content Notes
 For the PBR we're using 3 main asset samplers:
@@ -58,6 +64,8 @@ entities around your level.
 
 The `testLight` and `testPointLight` commands can be used to spawn real-time
 lights into the level to test your environment.
+
+To turn off the lightmap that's baked into the level, set **r_shadow_realtime_world_lightmaps** to **0**
 
 # Why MRA?
 
