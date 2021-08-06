@@ -139,7 +139,12 @@ varying vec4 vtexprojcoord;
 	#endif
 
 		vec4 albedo_f = texture2D(s_diffuse, tcbase);
+
+	#ifdef BUMP
 		vec3 normal_f = normalize(texture2D(s_normalmap, tcbase).rgb - 0.5);
+	#else
+		vec3 normal_f = vec3(0.0, 0.0, 1.0);
+	#endif
 
 	#ifdef ORTHO
 		float colorscale = 1.0;

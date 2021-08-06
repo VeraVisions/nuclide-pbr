@@ -152,7 +152,12 @@ varying mat3 invsurface;
 	#endif
 
 		vec4 albedo_f = texture2D(s_diffuse, tc);
+
+	#ifdef BUMP
 		vec3 normal_f = normalize(texture2D(s_normalmap, tc).rgb - 0.5);
+	#else
+		vec3 normal_f = vec3(0.0, 0.0, 1.0);
+	#endif
 
 	#ifdef UPPER
 		vec4 uc = texture2D(s_upper, tc);
