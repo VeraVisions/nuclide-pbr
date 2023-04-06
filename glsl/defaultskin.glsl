@@ -47,7 +47,7 @@ varying vec3 lightvector;
 varying vec3 light;
 
 // from this point forth, if we check for SPECULAR this means we're in PBR territory
-#ifdef SPECULAR
+#ifdef BUMP
 varying vec3 eyevector;
 varying mat3 invsurface;
 #define PBR

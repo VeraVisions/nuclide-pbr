@@ -40,7 +40,7 @@
 
 varying vec2 tex_c;
 
-#ifdef SPECULAR
+#ifdef BUMP
 varying vec3 eyevector;
 varying mat3 invsurface;
 #define PBR
